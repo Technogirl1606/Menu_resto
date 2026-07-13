@@ -7,9 +7,12 @@ use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\QrCodeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SettingsController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\PasswordController;
 
-Route::inertia('/', 'Welcome')->name('home');
+// Redirige la page d'accueil vers le menu, en attendant une vraie landing page.
+// Le nom 'home' est conservé : les pages d'authentification de Breeze en dépendent.
+Route::redirect('/', '/menu')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');

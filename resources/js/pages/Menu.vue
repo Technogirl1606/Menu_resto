@@ -14,30 +14,35 @@ const activeCategory = computed(() =>
 
 <template>
     <div class="min-h-screen bg-white">
-        <!-- En-tête -->
-        <div class="bg-red-600 text-center py-6 sm:py-10 px-5">
-            <p class="text-white font-medium text-2xl sm:text-4xl">Chez Fatou</p>
-            <p class="text-red-100 text-sm sm:text-base mt-1">Thiès · scannez pour commander</p>
+        <!-- En-tête + onglets : fixes en haut au scroll -->
+        <div class="sticky top-0 z-10 shadow-sm">
+            <div class="bg-red-100 text-center py-4 sm:py-6 px-5">
+                <img src="/logo.png" alt="logo" class="h-12 sm:h-16 mx-auto object-contain" />
+                <p class="text-red-600 text-xs sm:text-sm mt-1">Voici notre menu d'aujourd'hui. Bon appétit !</p>
+            </div>
+
+            <div class="bg-white border-b border-gray-100">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex gap-2 overflow-x-auto py-3 sm:justify-center sm:flex-wrap">
+                        <button
+                            v-for="cat in categories"
+                            :key="cat.id"
+                            @click="activeId = cat.id"
+                            class="whitespace-nowrap text-sm sm:text-base px-4 py-2 rounded-full border transition-colors"
+                            :class="cat.id === activeId
+                                ? 'bg-red-600 border-red-600 text-white'
+                                : 'bg-transparent border-gray-200 text-gray-700 hover:border-red-300'"
+                        >
+                            {{ cat.name }}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Onglets des catégories -->
-            <div class="flex gap-2 overflow-x-auto py-4 sm:justify-center sm:flex-wrap">
-                <button
-                    v-for="cat in categories"
-                    :key="cat.id"
-                    @click="activeId = cat.id"
-                    class="whitespace-nowrap text-sm sm:text-base px-4 py-2 rounded-full border transition-colors"
-                    :class="cat.id === activeId
-                        ? 'bg-red-600 border-red-600 text-white'
-                        : 'bg-transparent border-gray-200 text-gray-700 hover:border-red-300'"
-                >
-                    {{ cat.name }}
-                </button>
-            </div>
-
             <!-- Grille des plats -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 pb-10 min-h-[220px]">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 py-6 min-h-[220px]">
                 <div
                     v-for="item in activeCategory?.items ?? []"
                     :key="item.id"
