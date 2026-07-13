@@ -1,22 +1,29 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 
 const props = defineProps({
+    activeCategory: { type: Object, required: true },
     items: { type: Array, required: true },
-    categories: { type: Array, required: true },
+    categoryOptions: { type: Array, required: true },
 });
 
 const editingId = ref(null); // null = mode "ajout", sinon id du plat en cours de modification
 const imagePreview = ref(null);
 
 const form = useForm({
-    category_id: props.categories[0]?.id ?? '',
+    category_id: props.activeCategory.id,
     name: '',
     description: '',
     price: '',
     is_available: true,
     image: null,
+});
+
+// Si on change de catégorie (clic dans la sidebar), le formulaire d'ajout
+// pré-sélectionne automatiquement la nouvelle catégorie active.
+watch(() => props.activeCategory.id, (id) => {
+    if (!editingId.value) form.category_id = id;
 });
 
 function onImageChange(e) {
@@ -39,12 +46,13 @@ function startEdit(item) {
 function cancelEdit() {
     editingId.value = null;
     form.reset();
+    form.category_id = props.activeCategory.id;
     imagePreview.value = null;
 }
 
 function submit() {
     if (editingId.value) {
-        form.post(`/admin/items/${editingId.value}`, {
+        form.post(`/admin/items/${editingId.value}/update`, {
             forceFormData: true,
             onSuccess: () => cancelEdit(),
         });
@@ -65,14 +73,14 @@ function destroy(item) {
 
 <template>
     <div class="max-w-3xl mx-auto py-8 px-4">
-        <h1 class="text-xl font-medium mb-6">Gestion des plats</h1>
+        <h1 class="text-xl font-medium mb-6">{{ activeCategory.name }}</h1>
 
         <!-- Formulaire ajout / modification -->
         <form @submit.prevent="submit" class="border border-gray-200 rounded-xl p-4 mb-8 space-y-3">
             <p class="font-medium text-sm">{{ editingId ? 'Modifier le plat' : 'Ajouter un plat' }}</p>
 
             <select v-model="form.category_id" class="w-full border rounded px-3 py-2 text-sm">
-                <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                <option v-for="cat in categoryOptions" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
             </select>
 
             <input v-model="form.name" type="text" placeholder="Nom du plat" class="w-full border rounded px-3 py-2 text-sm" />
@@ -82,7 +90,7 @@ function destroy(item) {
             <div>
                 <label class="block text-sm text-gray-600 mb-1.5">Photo du plat</label>
                 <div class="flex items-center gap-3">
-                    <div class="w-20 h-20 shrink-0 rounded-lg border border-gray-200 bg-red-50 overflow-hidden flex items-center justify-center">
+                    <div class="w-20 h-20 flex-shrink-0 rounded-lg border border-gray-200 bg-red-50 overflow-hidden flex items-center justify-center">
                         <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
                         <span v-else class="text-red-300 text-xs">Aperçu</span>
                     </div>
@@ -111,7 +119,7 @@ function destroy(item) {
             <p v-if="form.errors.image" class="text-red-600 text-xs">{{ form.errors.image }}</p>
         </form>
 
-        <!-- Liste des plats existants -->
+        <!-- Liste des plats de la catégorie active -->
         <div class="space-y-2">
             <div v-for="item in items" :key="item.id" class="flex items-center gap-3 border border-gray-100 rounded-lg p-2">
                 <img v-if="item.image_url" :src="item.image_url" class="w-12 h-12 object-cover rounded" />
@@ -119,12 +127,23 @@ function destroy(item) {
 
                 <div class="flex-1">
                     <p class="text-sm font-medium">{{ item.name }}</p>
-                    <p class="text-xs text-gray-500">{{ item.category?.name }} · {{ item.price }} F</p>
+                    <p class="text-xs text-gray-500">{{ item.price }} F</p>
                 </div>
+
+                <span
+                    class="text-xs px-2 py-1 rounded-full"
+                    :class="item.is_available ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'"
+                >
+                    {{ item.is_available ? 'Disponible' : 'Masqué' }}
+                </span>
 
                 <button @click="startEdit(item)" class="text-xs px-2 py-1 border rounded">Modifier</button>
                 <button @click="destroy(item)" class="text-xs px-2 py-1 border rounded text-red-600">Supprimer</button>
             </div>
+
+            <p v-if="!items.length" class="text-sm text-gray-400 text-center py-6">
+                Aucun plat dans cette catégorie pour l'instant.
+            </p>
         </div>
     </div>
 </template>

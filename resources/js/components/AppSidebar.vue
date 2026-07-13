@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { BookOpen, FolderGit2, LayoutGrid, UtensilsCrossed, QrCode } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+
+
 import {
     Sidebar,
     SidebarContent,
@@ -17,13 +20,31 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const page = usePage();
+
+// Les catégories sont partagées globalement par HandleInertiaRequests (voir middleware).
+// Un lien de sidebar est généré automatiquement pour chacune : Menu du jour, Boissons, etc.
+const categoryNavItems = computed<NavItem[]>(() =>
+    ((page.props.categories as { id: number; name: string; slug: string }[]) ?? []).map((cat) => ({
+        title: cat.name,
+        href: `/admin/items/${cat.slug}`,
+        icon: UtensilsCrossed,
+    }))
+);
+
+const mainNavItems = computed<NavItem[]>(() => [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
-];
+    ...categoryNavItems.value,
+    {
+        title: 'QR code',
+        href: '/admin/qr-code',
+        icon: QrCode,
+    },
+]);
 
 const footerNavItems: NavItem[] = [
     {

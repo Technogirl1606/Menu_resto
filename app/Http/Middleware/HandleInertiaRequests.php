@@ -2,8 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
+
 
 class HandleInertiaRequests extends Middleware
 {
@@ -42,6 +48,11 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            // Disponible dans toutes les pages admin, pour construire les liens de la sidebar.
+            // Vide sur les pages publiques (utilisateur non connecté) pour éviter une requête inutile.
+            'categories' => $request->user()
+                ? Category::orderBy('position')->get(['id', 'name', 'slug'])
+                : [],
         ];
     }
 }
