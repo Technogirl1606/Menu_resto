@@ -127,7 +127,7 @@ function destroy(item) {
             <div>
                 <label class="block text-sm font-medium text-foreground mb-1.5">Photo du plat</label>
                 <div class="flex items-center gap-3">
-                    <div class="w-20 h-20 flex-shrink-0 rounded-lg border border-border bg-muted overflow-hidden flex items-center justify-center">
+                    <div class="w-20 h-20 shrink-0 rounded-lg border border-border bg-muted overflow-hidden flex items-center justify-center">
                         <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
                         <span v-else class="text-muted-foreground text-xs">Aperçu</span>
                     </div>
@@ -173,8 +173,8 @@ function destroy(item) {
                 class="flex flex-col sm:flex-row sm:items-center gap-3 bg-card border border-border rounded-lg p-3"
             >
                 <div class="flex items-center gap-3 min-w-0">
-                    <img v-if="item.image_url" :src="item.image_url" class="w-12 h-12 object-cover rounded-md flex-shrink-0" />
-                    <div v-else class="w-12 h-12 bg-muted rounded-md flex-shrink-0"></div>
+                    <img v-if="item.image_url" :src="item.image_url" class="w-12 h-12 object-cover rounded-md shrink-0" />
+                    <div v-else class="w-12 h-12 bg-muted rounded-md shrink-0"></div>
 
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
@@ -191,7 +191,7 @@ function destroy(item) {
                     </span>
                 </div>
 
-                <div class="flex items-center gap-2 flex-shrink-0 sm:ml-auto">
+                <div class="flex items-center gap-2 shrink-0 sm:ml-auto">
                     <span
                         class="hidden sm:inline text-xs px-2 py-1 rounded-full whitespace-nowrap"
                         :class="item.is_available
