@@ -11,6 +11,17 @@ const props = defineProps({
 const editingId = ref(null); // null = mode "ajout", sinon id du plat en cours de modification
 const imagePreview = ref(null);
 
+const hoursForm = useForm({
+    available_from: props.activeCategory.available_from ?? '',
+    available_to: props.activeCategory.available_to ?? '',
+});
+
+function submitHours() {
+    hoursForm.put(`/admin/categories/${props.activeCategory.slug}/availability`, {
+        preserveScroll: true,
+    });
+}
+
 const form = useForm({
     category_id: props.activeCategory.id,
     name: '',
@@ -73,6 +84,25 @@ function destroy(item) {
 
 <template>
     <div class="max-w-3xl mx-auto py-8 px-4">
+
+    <h1 class="text-xl font-semibold text-foreground mb-4">{{ activeCategory.name }}</h1>
+
+    <!-- Horaires de disponibilité de la catégorie -->
+    <form @submit.prevent="submitHours" class="bg-card border border-border rounded-xl p-4 mb-6 flex flex-wrap items-end gap-3">
+      <div>
+        <label class="block text-xs font-medium text-muted-foreground mb-1">Disponible de</label>
+        <input v-model="hoursForm.available_from" type="time" class="bg-background border border-input rounded-md px-2 py-1.5 text-sm text-foreground" />
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-muted-foreground mb-1">à</label>
+        <input v-model="hoursForm.available_to" type="time" class="bg-background border border-input rounded-md px-2 py-1.5 text-sm text-foreground" />
+      </div>
+      <button type="submit" class="text-xs px-3 py-2 rounded-md border border-input text-foreground hover:bg-muted">
+        Enregistrer les horaires
+      </button>
+      <p class="text-xs text-muted-foreground w-full">Laisse les deux champs vides si cette catégorie doit être visible toute la journée.</p>
+    </form>
+
         <h1 class="text-xl font-semibold text-foreground mb-6">{{ activeCategory.name }}</h1>
 
         <!-- Formulaire ajout / modification -->

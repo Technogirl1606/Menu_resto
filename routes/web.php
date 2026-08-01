@@ -25,6 +25,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::get('/qr-code', [QrCodeController::class, 'show'])->name('qr-code');
     Route::get('/qr-code/image', [QrCodeController::class, 'image'])->name('qr-code.image');
+    Route::put('/categories/{category}/availability', [CategoryController::class, 'updateAvailability'])->name('categories.availability');
 });
 
 require __DIR__.'/settings.php';

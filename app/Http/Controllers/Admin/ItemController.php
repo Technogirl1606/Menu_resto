@@ -20,13 +20,13 @@ class ItemController extends Controller
     {
         $category ??= Category::orderBy('position')->firstOrFail();
 
-        return Inertia::render('Admin/Items/Index', [
-            'activeCategory' => $category->only(['id', 'name', 'slug']),
-            'items' => Item::where('category_id', $category->id)
-                ->orderBy('position')
-                ->get(),
-            'categoryOptions' => Category::orderBy('position')->get(['id', 'name']),
-        ]);
+    return Inertia::render('Admin/Items/Index', [
+        'activeCategory' => $category->only(['id', 'name', 'slug', 'available_from', 'available_to']),
+        'items' => Item::where('category_id', $category->id)
+            ->orderBy('position')
+            ->get(),
+        'categoryOptions' => Category::orderBy('position')->get(['id', 'name']),
+    ]);
     }
 
     // POST /admin/items  (envoyé via useForm().post, multipart/form-data)
