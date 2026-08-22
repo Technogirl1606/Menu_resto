@@ -1,4 +1,4 @@
-<script setup>
+<script setup Lang='ts'>
 defineProps({
     menuUrl: { type: String, required: true },
 });

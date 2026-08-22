@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { UtensilsCrossed, QrCode, Eye } from '@lucide/vue';
+import { UtensilsCrossed, QrCode, Eye, FolderPlus } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -37,12 +37,19 @@ const mainNavItems = computed<NavItem[]>(() => [
         icon: Eye,
         target: '_blank',
     },
+    {
+        title: 'Catégories',
+        href: '/admin/categories',
+        icon: FolderPlus,
+    },
     ...categoryNavItems.value,
     {
         title: 'QR code',
         href: '/admin/qr-code',
         icon: QrCode,
     },
+
+
 ]);
 
 const footerNavItems: NavItem[] = [];

@@ -1,4 +1,4 @@
-<script setup>
+<script setup Lang='ts'>
 import { ref, watch } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 
@@ -17,6 +17,14 @@ const hoursForm = useForm({
 });
 
 function submitHours() {
+    hoursForm.put(`/admin/categories/${props.activeCategory.slug}/availability`, {
+        preserveScroll: true,
+    });
+}
+
+function clearHours() {
+    hoursForm.available_from = '';
+    hoursForm.available_to = '';
     hoursForm.put(`/admin/categories/${props.activeCategory.slug}/availability`, {
         preserveScroll: true,
     });
@@ -100,6 +108,10 @@ function destroy(item) {
       <button type="submit" class="text-xs px-3 py-2 rounded-md border border-input text-foreground hover:bg-muted">
         Enregistrer les horaires
       </button>
+
+      <button type="button" @click="clearHours" class="text-xs px-3 py-2 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10" >
+    Retirer les horaires
+  </button>
       <p class="text-xs text-muted-foreground w-full">Laisse les deux champs vides si cette catégorie doit être visible toute la journée.</p>
     </form>
 
@@ -208,7 +220,7 @@ function destroy(item) {
 
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
-                        <p class="text-xs text-muted-foreground">{{ item.price }} F</p>
+                       <p class="text-xs text-muted-foreground">{{ Number(item.price).toLocaleString('fr-FR') }} F</p>
                     </div>
 
                     <span
