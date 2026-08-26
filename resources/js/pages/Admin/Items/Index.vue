@@ -10,26 +10,7 @@ const props = defineProps({
 
 const editingId = ref(null); // null = mode "ajout", sinon id du plat en cours de modification
 const imagePreview = ref(null);
-
-const hoursForm = useForm({
-    available_from: props.activeCategory.available_from ?? '',
-    available_to: props.activeCategory.available_to ?? '',
-});
-
-function submitHours() {
-    hoursForm.put(`/admin/categories/${props.activeCategory.slug}/availability`, {
-        preserveScroll: true,
-    });
-}
-
-function clearHours() {
-    hoursForm.available_from = '';
-    hoursForm.available_to = '';
-    hoursForm.put(`/admin/categories/${props.activeCategory.slug}/availability`, {
-        preserveScroll: true,
-    });
-}
-
+const showForm = ref(false);
 const form = useForm({
     category_id: props.activeCategory.id,
     name: '',
@@ -60,6 +41,7 @@ function startEdit(item) {
     form.is_available = item.is_available;
     form.image = null;
     imagePreview.value = item.image_url;
+    showForm.value = true;
 }
 
 function cancelEdit() {
@@ -67,6 +49,7 @@ function cancelEdit() {
     form.reset();
     form.category_id = props.activeCategory.id;
     imagePreview.value = null;
+    showForm.value = false;
 }
 
 function submit() {
@@ -78,7 +61,12 @@ function submit() {
     } else {
         form.post('/admin/items', {
             forceFormData: true,
-            onSuccess: () => cancelEdit(),
+            onSuccess: () => {
+                form.reset();
+                form.category_id = props.activeCategory.id;
+                imagePreview.value = null;
+                showForm.value = false;
+            },
         });
     }
 }
@@ -93,32 +81,20 @@ function destroy(item) {
 <template>
     <div class="max-w-3xl mx-auto py-8 px-4">
 
-    <h1 class="text-xl font-semibold text-foreground mb-4">{{ activeCategory.name }}</h1>
-
-    <!-- Horaires de disponibilité de la catégorie -->
-    <form @submit.prevent="submitHours" class="bg-card border border-border rounded-xl p-4 mb-6 flex flex-wrap items-end gap-3">
-      <div>
-        <label class="block text-xs font-medium text-muted-foreground mb-1">Disponible de</label>
-        <input v-model="hoursForm.available_from" type="time" class="bg-background border border-input rounded-md px-2 py-1.5 text-sm text-foreground" />
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-muted-foreground mb-1">à</label>
-        <input v-model="hoursForm.available_to" type="time" class="bg-background border border-input rounded-md px-2 py-1.5 text-sm text-foreground" />
-      </div>
-      <button type="submit" class="text-xs px-3 py-2 rounded-md border border-input text-foreground hover:bg-muted">
-        Enregistrer les horaires
-      </button>
-
-      <button type="button" @click="clearHours" class="text-xs px-3 py-2 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10" >
-    Retirer les horaires
-  </button>
-      <p class="text-xs text-muted-foreground w-full">Laisse les deux champs vides si cette catégorie doit être visible toute la journée.</p>
-    </form>
-
-        <h1 class="text-xl font-semibold text-foreground mb-6">{{ activeCategory.name }}</h1>
-
+    <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-semibold text-foreground">{{ activeCategory.name }}</h1>
+    <button
+        v-if="!showForm"
+        @click="showForm = true"
+        class="text-sm px-3 py-2 rounded-md bg-primary text-primary-foreground"
+    >
+        + Ajouter un plat
+    </button>
+</div>
+    
         <!-- Formulaire ajout / modification -->
         <form
+            v-if="showForm"
             @submit.prevent="submit"
             class="bg-card border border-border rounded-xl p-5 sm:p-6 mb-8 space-y-4 shadow-sm"
         >
@@ -194,7 +170,6 @@ function destroy(item) {
                     {{ editingId ? 'Enregistrer' : 'Ajouter' }}
                 </button>
                 <button
-                    v-if="editingId"
                     type="button"
                     @click="cancelEdit"
                     class="text-sm px-4 py-2 rounded-md border border-input text-foreground hover:bg-muted transition-colors"
@@ -203,7 +178,9 @@ function destroy(item) {
                 </button>
             </div>
 
+            <p v-if="form.errors.category_id" class="text-destructive text-xs">{{ form.errors.category_id }}</p>
             <p v-if="form.errors.name" class="text-destructive text-xs">{{ form.errors.name }}</p>
+            <p v-if="form.errors.price" class="text-destructive text-xs">{{ form.errors.price }}</p>
             <p v-if="form.errors.image" class="text-destructive text-xs">{{ form.errors.image }}</p>
         </form>
 

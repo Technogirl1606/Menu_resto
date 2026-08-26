@@ -11,29 +11,19 @@ use Inertia\Response;
 
 class CategoryController extends Controller
 {
-
-public function index(): Response
-{
-    return Inertia::render('Admin/Categories/Index', [
-        'categories' => Category::orderBy('position')->get(),
-    ]);
-}
-    public function updateAvailability(Request $request, Category $category)
+    public function index(): Response
     {
-        $data = $request->validate([
-            'available_from' => ['nullable', 'date_format:H:i'],
-            'available_to' => ['nullable', 'date_format:H:i'],
+        return Inertia::render('Admin/Categories/Index', [
+            'categories' => Category::orderBy('position')->get(),
         ]);
-
-        $category->update($data);
-
-        return redirect()->back()->with('success', 'Horaires mis à jour.');
     }
 
-      public function store(Request $request)
+    public function store(Request $request)
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'available_from' => ['nullable', 'date_format:H:i'],
+            'available_to' => ['nullable', 'date_format:H:i'],
         ]);
 
         $data['slug'] = Str::slug($data['name']);
@@ -45,10 +35,24 @@ public function index(): Response
         return redirect()->back()->with('success', 'Catégorie ajoutée.');
     }
 
+    public function update(Request $request, Category $category)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'available_from' => ['nullable', 'date_format:H:i'],
+            'available_to' => ['nullable', 'date_format:H:i'],
+        ]);
+
+        $data['slug'] = Str::slug($data['name']);
+
+        $category->update($data);
+
+        return redirect()->back()->with('success', 'Catégorie mise à jour.');
+    }
 
     public function destroy(Category $category)
-{
-    $category->delete();
-    return redirect()->back()->with('success', 'Catégorie supprimée.');
-}
+    {
+        $category->delete();
+        return redirect()->back()->with('success', 'Catégorie supprimée.');
+    }
 }

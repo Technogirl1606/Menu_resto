@@ -52,7 +52,7 @@ const activeCategory = computed(() =>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Grille des plats -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 py-6 min-h-55">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 py-6 min-h-55 justify-center">
                 <div
                     v-for="item in activeCategory?.items ?? []"
                     :key="item.id"
