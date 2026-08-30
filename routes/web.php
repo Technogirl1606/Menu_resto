@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\SettingsController;
 
 
 
-Route::redirect('/', '/menu');
+Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])->get('/dashboard', function () {
     return redirect()->route('admin.items.index');})->name('dashboard');

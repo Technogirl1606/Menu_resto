@@ -35,7 +35,7 @@ const editForm = useForm({
     available_to: '',
 });
 
-function startEdit(cat: { id: number; name: string; available_from: string | null; available_to: string | null }) {
+function startEdit(cat: { id: number; slug: string; name: string; available_from: string | null; available_to: string | null }) {
     editingId.value = cat.id;
     editForm.name = cat.name;
     editForm.available_from = cat.available_from ?? '';
@@ -47,23 +47,22 @@ function cancelEdit() {
     editForm.reset();
 }
 
-function saveEdit(id: number) {
-    editForm.put(`/admin/categories/${id}`, {
+function saveEdit(slug: string) {
+    editForm.put(`/admin/categories/${slug}`, {
         preserveScroll: true,
         onSuccess: () => cancelEdit(),
     });
 }
 
-function clearHours(id: number, name: string) {
+function clearHours(slug: string, name: string) {
     editForm.name = name;
     editForm.available_from = '';
     editForm.available_to = '';
-    editForm.put(`/admin/categories/${id}`, {
+    editForm.put(`/admin/categories/${slug}`, {
         preserveScroll: true,
         onSuccess: () => cancelEdit(),
     });
 }
-
 /* --- Suppression --- */
 function destroy(category: { id: number; slug: string; name: string }) {
     if (confirm(`Supprimer la catégorie "${category.name}" et tous ses plats ?`)) {
@@ -148,10 +147,10 @@ function destroy(category: { id: number; slug: string; name: string }) {
                             <label class="block text-xs font-medium text-muted-foreground mb-1">à</label>
                             <input v-model="editForm.available_to" type="time" class="bg-background border border-input rounded-md px-2 py-1.5 text-sm text-foreground" />
                         </div>
-                        <button @click="saveEdit(cat.id)" class="text-xs px-3 py-2 rounded-md bg-primary text-primary-foreground">
+                        <button @click="saveEdit(cat.slug)" class="text-xs px-3 py-2 rounded-md bg-primary text-primary-foreground">
                             Enregistrer
                         </button>
-                        <button @click="clearHours(cat.id, cat.name)" class="text-xs px-3 py-2 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10">
+                        <button @click="clearHours(cat.slug, cat.name)" class="text-xs px-3 py-2 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10">
                             Retirer les horaires
                         </button>
                         <button @click="cancelEdit" class="text-xs px-3 py-2 rounded-md border border-input text-foreground hover:bg-muted">
