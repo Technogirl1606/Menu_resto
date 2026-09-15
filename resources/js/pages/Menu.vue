@@ -70,7 +70,7 @@ const activeCategory = computed(() =>
                     <div class="p-3 sm:p-4">
                         <p class="font-medium text-sm sm:text-base text-gray-900">{{ item.name }}</p>
                         <p class="text-xs sm:text-sm text-gray-500 mb-1.5">{{ item.description }}</p>
-                        <p class="text-sm sm:text-base font-medium text-red-600">{{ item.price }} F</p>
+                        <p class="text-sm sm:text-base font-medium text-red-600">{{ Number(item.price).toLocaleString('fr-FR')}} F</p>
                     </div>
                 </div>
 
